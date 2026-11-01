@@ -151,6 +151,11 @@ h1, h2, h3, .display {
 }
 .hero-nib svg { width: 100%; height: 100%; }
 .hero-foot { position: relative; margin-top: auto; display: grid; gap: var(--space-3); }
+@media (min-width: 600px) and (max-width: 899px) {
+  .hero { min-height: min(calc(100svh - var(--header)), 118vw); }
+  .hero-nib { right: 7%; bottom: 158px; width: 20vw; }
+}
+@media (min-width: 600px) and (max-width: 699px) { .hero-nib { width: 15vw; } }
 .hero-sub { max-width: 58%; padding-top: var(--space-4); font-size: 1.0625rem; line-height: 1.35; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-3); }
 .hero-actions .btn { flex: 1 1 100%; }
@@ -161,6 +166,10 @@ h1, h2, h3, .display {
   .hero-title { margin-top: clamp(16px, 4vh, 56px); font-size: min(calc((100vw - 2 * var(--gutter)) / var(--cols)), 20vh); }
   .hero-nib { z-index: -1; right: 10%; top: 3%; bottom: auto; width: auto; height: 62vh; transform: translate(var(--mx, 0), var(--my, 0)) rotate(32deg); }
   .hl-1 { margin-inline: 6% auto; }
+  @media (max-width: 1279px) {
+    .hero:not(.hero-gap) .hero-nib { right: 1%; height: min(58vh, 40vw); }
+    .hero:not(.hero-gap) .hl-1 { margin-left: 0; }
+  }
   .hero-gap .hl-1 { margin-inline: auto; }
   .hero-gap .hero-nib { right: auto; left: 45%; top: auto; bottom: 110px; height: 36vh; transform: translate(var(--mx, 0), var(--my, 0)) rotate(-48deg); }
   .hero-foot { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--space-4); }
@@ -203,6 +212,13 @@ h1, h2, h3, .display {
 .js .strike-end.is-on { opacity: 1; }
 .js .strike .stroke { clip-path: inset(-60% 100% -60% 0); }
 
+/* Phones skip the strike and go straight from hero to services. */
+.only-phone { display: none; }
+@media (max-width: 899px) {
+  .strike, .only-desktop { display: none; }
+  .only-phone { display: inline-flex; }
+}
+
 /* Section heads */
 .sec-title { font-size: var(--title); max-width: 16em; hyphens: auto; overflow-wrap: break-word; }
 .sec-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
@@ -214,6 +230,7 @@ h1, h2, h3, .display {
   background: var(--paper); border-radius: var(--radius) var(--radius) 0 0;
   padding: var(--space-5) var(--gutter) var(--space-5);
 }
+@media (max-width: 899px) { .services { margin-top: 0; border-radius: 0; border-top: 2px solid var(--ink); } }
 .svc-grid { display: grid; gap: 0; margin-top: var(--space-4); }
 .svc { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3) 0 var(--space-3); border-top: 2px solid var(--ink); }
 .svc h3 { font-size: clamp(1.375rem, 1rem + 1.6vw, 2.25rem); overflow-wrap: anywhere; }
@@ -246,16 +263,21 @@ h1, h2, h3, .display {
 .ledger .why { font-weight: 400; }
 .after { font-family: var(--display); font-stretch: 125%; font-weight: 900; font-size: 1.5rem; }
 tr.up .after { color: var(--red); }
-tr.cut .row-line, tr.cut .before { opacity: 0.72; }
 
-@media (max-width: 719px) {
+/* Stacked rows until the table has room to keep each budget line on one line, so its strike stays clean. */
+@media (max-width: 1099px) {
   .ledger thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .ledger, .ledger tbody, .ledger tfoot { display: block; }
-  .ledger tr { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 2px var(--space-2); align-items: baseline; padding: var(--space-2) 0; border-top: 1px solid var(--ink); }
-  .ledger .why { grid-column: 1 / -1; font-size: 0.8125rem; }
+  .ledger tr { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--space-1) var(--space-3); align-items: end; padding: var(--space-2) 0; border-top: 1px solid var(--ink); }
+  .ledger tbody tr:first-child { border-top: 2px solid var(--ink); }
+  .ledger th[scope='row'] { grid-column: 1 / -1; font-size: clamp(1.125rem, 1rem + 1vw, 1.5rem); line-height: 1.2; }
+  .ledger .why { grid-column: 1; grid-row: 2; font-size: 0.8125rem; }
+  .ledger .before { grid-column: 2; grid-row: 2; }
+  .ledger .after { grid-column: 3; grid-row: 2; min-width: 4.2rem; }
+  .ledger .num::before { content: attr(data-label); display: block; font-family: var(--mono); font-size: 0.75rem; font-stretch: 100%; font-weight: 400; line-height: 1.5; }
   .ledger tfoot tr { border-top: 3px solid var(--ink); }
 }
-@media (min-width: 720px) {
+@media (min-width: 1100px) {
   .ledger tbody tr, .ledger tfoot tr { border-bottom: 1px solid var(--ink); }
   .ledger tbody th, .ledger tbody td, .ledger tfoot th, .ledger tfoot td { padding: 18px var(--space-3) 18px 0; vertical-align: baseline; }
   .ledger th[scope='row'] { font-size: var(--text-l); line-height: 1.15; font-weight: 500; }
@@ -296,7 +318,11 @@ tr.cut .row-line, tr.cut .before { opacity: 0.72; }
 .case-num {
   font-family: var(--display); font-stretch: 125%; font-weight: 900; line-height: 0.9; letter-spacing: -0.03em;
   font-size: clamp(5rem, 24vw, 19rem); color: var(--red); white-space: nowrap;
+  position: relative; width: fit-content; --sw: 0.035em;
 }
+.case-digits { display: block; }
+.case-num .stroke-under { top: 96%; height: 12%; }
+.case-num .stroke path { stroke: var(--ink); }
 .case-what { margin-top: var(--space-2); font-size: var(--text-l); font-weight: 500; line-height: 1.15; max-width: 16em; }
 .case-who { margin-top: var(--space-1); }
 @media (min-width: 900px) {
@@ -310,6 +336,7 @@ tr.cut .row-line, tr.cut .before { opacity: 0.72; }
 /* FAQ */
 .faq { background: var(--white); padding: var(--space-5) var(--gutter) calc(var(--space-5) + var(--radius)); display: grid; gap: var(--space-4); }
 .faq-side { display: grid; gap: var(--space-2); align-content: start; }
+.faq-side .sec-title { font-size: min(var(--title), calc((100vw - 2 * var(--gutter)) / var(--cols))); hyphens: manual; }
 .faq-list details { border-top: 2px solid var(--ink); }
 .faq-list details:last-child { border-bottom: 2px solid var(--ink); }
 .faq-list summary {
@@ -320,7 +347,10 @@ tr.cut .row-line, tr.cut .before { opacity: 0.72; }
 .faq-list summary::after { content: '+'; flex: none; font-family: var(--mono); font-size: 1.5rem; font-weight: 400; }
 .faq-list details[open] summary::after { content: '−'; }
 .faq-list details p { padding: 0 0 var(--space-3); max-width: 36em; }
-@media (min-width: 900px) { .faq { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-5); } }
+@media (min-width: 900px) {
+  .faq { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-5); }
+  .faq-side .sec-title { font-size: min(var(--title), calc((100vw - 2 * var(--gutter)) * 0.36 / var(--cols))); }
+}
 
 /* Book: red sheet */
 .book {
@@ -330,8 +360,8 @@ tr.cut .row-line, tr.cut .before { opacity: 0.72; }
 }
 .book :focus-visible { outline-color: var(--ink); }
 .book .panel :focus-visible { outline-color: var(--white); }
-.book-title { margin-top: var(--space-2); font-size: min(calc((100vw - 2 * var(--gutter)) / var(--cols)), 13rem); }
-.bl { display: block; width: fit-content; }
+.book-title { margin-top: var(--space-2); font-size: min(calc((100vw - 2 * var(--gutter)) / (var(--cols) * 1.06)), 13rem); }
+.bl { display: block; width: fit-content; white-space: nowrap; }
 .bl-1 { margin-left: auto; color: var(--white); }
 .book-grid { display: grid; gap: var(--space-3); margin-top: var(--space-4); }
 .book-sub { font-size: var(--text-l); font-weight: 500; line-height: 1.15; max-width: 18em; }
@@ -387,9 +417,20 @@ tr.cut .row-line, tr.cut .before { opacity: 0.72; }
 /* Reveal: every entrance is a strike, left to right. */
 .js .wipe { clip-path: inset(-20% 100% -20% 0); transition: clip-path 0.9s var(--strike); }
 .js .wipe.is-in { clip-path: inset(-20% -5% -20% 0); }
-.js .ledger .cut .stroke { clip-path: inset(-60% 100% -60% 0); transition: clip-path 0.8s var(--strike) 0.2s; }
-.js .ledger .cut.is-in .stroke { clip-path: inset(-60% -2% -60% 0); }
-.js .ledger .cut:nth-child(2) .stroke { transition-delay: 0.45s; }
+
+/* Scroll-drawn: --t runs 0 to 1 as a block enters, --s is its second half. */
+.js .row > * { clip-path: inset(-300% calc((1 - min(1, var(--t, 0) * 2)) * 100%) -300% 0); }
+.js .ledger .cut .stroke { clip-path: inset(-60% calc((1 - var(--s, 0)) * 100%) -60% 0); }
+.row-nib { display: none; }
+.js .row-nib {
+  display: block; position: absolute; z-index: 2; left: calc(var(--s, 0) * 100%); bottom: 42%;
+  width: 26px; height: 56px; opacity: 0; pointer-events: none;
+  transform: translateX(-50%) rotate(24deg); transform-origin: 50% 100%;
+}
+.js .row-nib.is-on { opacity: 1; }
+.js .case-digits { clip-path: inset(-20% calc((1 - min(1, var(--t, 0) * 1.6)) * 100%) -20% 0); }
+.js .case .stroke { clip-path: inset(-60% calc((1 - var(--s, 0)) * 100%) -60% 0); }
+.js .case-what, .js .case-who { opacity: var(--s, 0); transform: translateX(calc((1 - var(--s, 0)) * -16px)); }
 
 /* Hero load */
 .js .hero-title .stroke { clip-path: inset(-60% 100% -60% 0); animation: draw 1s var(--strike) 0.55s forwards; }
@@ -404,6 +445,9 @@ tr.cut .row-line, tr.cut .before { opacity: 0.72; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .js .wipe, .js .hl-text { clip-path: none; }
   .js .stroke, .js .hero-title .stroke, .js .strike .stroke, .js .ledger .cut .stroke { clip-path: none; }
+  .js .row > *, .js .case-digits, .js .case .stroke { clip-path: none; }
+  .js .case-what, .js .case-who { opacity: 1; transform: none; }
+  .js .row-nib { display: none; }
   .js .opt .stroke { clip-path: inset(-60% 100% -60% 0); }
   .js .opts:has(input:checked) .opt:not(:has(input:checked)) .stroke { clip-path: none; }
   .strike { height: auto; }

@@ -3,7 +3,7 @@ const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const i18n = JSON.parse(document.getElementById('i18n').textContent);
 
 /* Reveals: observe, strike once, stop observing. */
-const targets = document.querySelectorAll('.wipe, .ledger .cut');
+const targets = document.querySelectorAll('.wipe');
 if (reduced || !('IntersectionObserver' in window)) {
   targets.forEach((el) => el.classList.add('is-in'));
 } else {
@@ -15,7 +15,30 @@ if (reduced || !('IntersectionObserver' in window)) {
   targets.forEach((el) => io.observe(el));
 }
 
-/* The strike: fit each word, then scrub the pen with scroll. */
+/* Markup rows and proof numbers draw in with scroll, and never undo. */
+let scrubbed = [...document.querySelectorAll('[data-scrub]')].map((el) => ({
+  el,
+  t: 0,
+  nib: el.querySelector('.row-nib'),
+}));
+function scrubBlocks() {
+  if (!scrubbed.length) return;
+  const vh = innerHeight;
+  scrubbed = scrubbed.filter((item) => {
+    const top = item.el.getBoundingClientRect().top;
+    const t = clamp((vh * 0.92 - top) / (vh * 0.42));
+    if (t > item.t) {
+      item.t = t;
+      item.el.style.setProperty('--t', t.toFixed(3));
+      const s = clamp((t - 0.5) / 0.5);
+      item.el.style.setProperty('--s', s.toFixed(3));
+      if (item.nib) item.nib.classList.toggle('is-on', s > 0 && s < 1);
+    }
+    return item.t < 1;
+  });
+}
+
+/* The strike: fit each word, then scrub the pen with scroll. Hidden on phones. */
 const strike = document.querySelector('.strike');
 const stage = strike.querySelector('.strike-stage');
 const rows = [...strike.querySelectorAll('.sw')];
@@ -24,7 +47,10 @@ const strokes = rows.map((r) => r.querySelector('.stroke'));
 const nib = strike.querySelector('.strike-nib');
 const endLine = strike.querySelector('.strike-end');
 
+const strikeShown = () => strike.getClientRects().length > 0;
+
 function fitWords() {
+  if (!strikeShown()) return;
   const width = stage.clientWidth;
   const height = stage.clientHeight || innerHeight * 0.6;
   words.forEach((w) => { w.style.fontSize = '100px'; });
@@ -42,6 +68,8 @@ function fitWords() {
 let ticking = false;
 function scrub() {
   ticking = false;
+  scrubBlocks();
+  if (!strikeShown()) return;
   const rect = strike.getBoundingClientRect();
   const span = rect.height - strike.querySelector('.strike-pin').offsetHeight;
   const p = clamp(-rect.top / span);

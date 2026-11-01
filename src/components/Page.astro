@@ -19,6 +19,7 @@ const heroCols = cols(t.hero.lines);
 const heroGap = emWidth(t.hero.lines[2]) < 0.6 * heroCols;
 const bookCols = cols(t.book.title);
 const stepCols = cols(t.method.steps.map((s) => s.verb));
+const faqCols = cols(t.faq.title.split(' '));
 const sum = (k) => ledgerNumbers.reduce((a, r) => a + r[k], 0);
 const clientStrings = {
   errRequired: t.book.errRequired, errEmail: t.book.errEmail, errService: t.book.errService,
@@ -101,7 +102,8 @@ const clientStrings = {
         <p class="hero-sub">{t.hero.sub}</p>
         <div class="hero-actions">
           <a class="btn" href="#book"><span>[ {t.hero.cta} ]</span></a>
-          <a class="textlink mono" href="#edit">{t.hero.next} ↓</a>
+          <a class="textlink mono only-desktop" href="#edit">{t.hero.next} ↓</a>
+          <a class="textlink mono only-phone" href="#markup">{t.hero.next} ↓</a>
         </div>
       </div>
     </section>
@@ -164,22 +166,22 @@ const clientStrings = {
             const n = ledgerNumbers[i];
             const up = n.after > n.before;
             return (
-              <tr class:list={['row', { cut: n.cut, up }]}>
+              <tr class:list={['row', { cut: n.cut, up }]} data-scrub>
                 <th scope="row">
-                  <span class="row-line">{r.line}{n.cut && <Stroke kind={`s${i % 3}`} />}</span>
+                  <span class="row-line">{r.line}{n.cut && <Stroke kind={`s${i % 3}`} />}{n.cut && <svg class="row-nib" aria-hidden="true" focusable="false"><use href="#nib" /></svg>}</span>
                 </th>
-                <td class="num before">{n.before}%</td>
-                <td class="num after">{n.after}%</td>
+                <td class="num before" data-label={t.markup.head.before}>{n.before}%</td>
+                <td class="num after" data-label={t.markup.head.after}>{n.after}%</td>
                 <td class="why mono">{r.why}</td>
               </tr>
             );
           })}
         </tbody>
         <tfoot>
-          <tr>
+          <tr class="row" data-scrub>
             <th scope="row">{t.markup.total}</th>
-            <td class="num before">{sum('before')}%</td>
-            <td class="num after">{sum('after')}%</td>
+            <td class="num before" data-label={t.markup.head.before}>{sum('before')}%</td>
+            <td class="num after" data-label={t.markup.head.after}>{sum('after')}%</td>
             <td class="why mono">{t.markup.totalNote}</td>
           </tr>
         </tfoot>
@@ -209,8 +211,8 @@ const clientStrings = {
       </div>
       <ul class="cases" role="list">
         {t.proof.items.map((c, i) => (
-          <li class={`case case-${i}`}>
-            <p class="case-num wipe">{proofNumbers[i]}</p>
+          <li class={`case case-${i}`} data-scrub>
+            <p class="case-num"><span class="case-digits">{proofNumbers[i]}</span><Stroke kind="under" /></p>
             <p class="case-what">{c.what}</p>
             <p class="mono case-who">[ {t.ui.sample} ] {c.who}</p>
           </li>
@@ -219,7 +221,7 @@ const clientStrings = {
     </section>
 
     <section class="faq" id="faq" aria-labelledby="faq-title">
-      <div class="faq-side">
+      <div class="faq-side" style={`--cols:${faqCols}`}>
         <p class="mono">[ {t.faq.label} ]</p>
         <h2 id="faq-title" class="sec-title">{t.faq.title}</h2>
       </div>

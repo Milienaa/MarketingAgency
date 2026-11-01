@@ -46,7 +46,7 @@ export const copy = {
       next: 'see what gets cut',
     },
     strike: {
-      label: 'the edit',
+      label: 'what counts',
       title: 'Four numbers walk into your board meeting.',
       words: ['Impressions', 'Followers', 'Clicks', 'Pipeline'],
       end: 'One gets to stay.',
@@ -145,7 +145,7 @@ export const copy = {
       next: 'mira qué se tacha',
     },
     strike: {
-      label: 'la corrección',
+      label: 'lo que cuenta',
       title: 'Cuatro cifras entran en tu reunión de dirección.',
       words: ['Impresiones', 'Seguidores', 'Clics', 'Pipeline'],
       end: 'Solo una se queda.',
@@ -244,7 +244,7 @@ export const copy = {
       next: 'sehen, was gestrichen wird',
     },
     strike: {
-      label: 'der rotstift',
+      label: 'was zählt',
       title: 'Vier Zahlen kommen in Ihre Vorstandssitzung.',
       words: ['Reichweite', 'Follower', 'Klicks', 'Pipeline'],
       end: 'Eine darf bleiben.',
@@ -343,7 +343,7 @@ export const copy = {
       next: 'voir ce qui saute',
     },
     strike: {
-      label: 'la correction',
+      label: 'ce qui compte',
       title: 'Quatre chiffres entrent dans votre comité de direction.',
       words: ['Impressions', 'Abonnés', 'Clics', 'Pipeline'],
       end: 'Un seul reste.',
@@ -442,7 +442,7 @@ export const copy = {
       next: 'guarda cosa salta',
     },
     strike: {
-      label: 'la correzione',
+      label: 'ciò che conta',
       title: 'Quattro numeri entrano nel tuo consiglio di amministrazione.',
       words: ['Impression', 'Follower', 'Clic', 'Pipeline'],
       end: 'Ne resta uno.',
@@ -541,7 +541,7 @@ export const copy = {
       next: 'zobacz, co wypada',
     },
     strike: {
-      label: 'korekta',
+      label: 'co się liczy',
       title: 'Cztery liczby wchodzą na posiedzenie zarządu.',
       words: ['Wyświetlenia', 'Obserwujący', 'Kliknięcia', 'Pipeline'],
       end: 'Zostaje jedna.',
