@@ -1,0 +1,13 @@
+---
+// The Redpen motif: one hand-drawn red line. Revealed with a left-to-right clip.
+const { kind = 's0' } = Astro.props;
+const paths = {
+  s0: 'M4 36C120 22 250 42 390 30S640 16 790 32 930 28 996 18',
+  s1: 'M4 22C140 40 280 18 430 34S700 42 820 24 950 34 996 38',
+  s2: 'M4 30C100 44 220 20 370 28S610 40 760 22 900 20 996 34',
+  under: 'M4 30C160 14 330 44 520 26S830 18 996 34',
+};
+---
+<svg class:list={['stroke', `stroke-${kind === 'under' ? 'under' : 'through'}`]} viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <path d={paths[kind]} vector-effect="non-scaling-stroke" />
+</svg>

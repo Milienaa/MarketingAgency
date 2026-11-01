@@ -1,0 +1,302 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../styles/global.css';
+import { copy, locales, settings, ledgerNumbers, proofNumbers, serviceIds } from '../content/site.js';
+import Stroke from './Stroke.astro';
+
+const { lang } = Astro.props;
+const t = copy[lang];
+const pathFor = (l) => (l === 'en' ? '/' : `/${l}/`);
+const site = Astro.site;
+// Estimated width in em of a line set in Archivo Expanded Black caps, used to size type per language.
+const glyphs = { I: 0.42, J: 0.72, L: 0.76, T: 0.78, M: 1.1, W: 1.26, Q: 1, O: 1, G: 1, ' ': 0.3, '.': 0.38, ',': 0.38, '-': 0.5 };
+const emWidth = (s) => [...s.toLocaleUpperCase(lang)].reduce((a, c) => a + (glyphs[c] ?? 0.9), 0);
+const cols = (lines) => Math.max(...lines.map(emWidth)).toFixed(2);
+const heroCols = cols(t.hero.lines);
+// A short last line leaves a gap on its left: the nib moves there instead of crossing a long first line.
+const heroGap = emWidth(t.hero.lines[2]) < 0.6 * heroCols;
+const bookCols = cols(t.book.title);
+const stepCols = cols(t.method.steps.map((s) => s.verb));
+const sum = (k) => ledgerNumbers.reduce((a, r) => a + r[k], 0);
+const clientStrings = {
+  errRequired: t.book.errRequired, errEmail: t.book.errEmail, errService: t.book.errService,
+  doneMail: t.book.doneMail, subject: t.book.subject, email: settings.email,
+};
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{t.meta.title}</title>
+  <meta name="description" content={t.meta.description} />
+  <meta name="theme-color" content="#EBEBEB" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  {site && <link rel="canonical" href={new URL(pathFor(lang), site)} />}
+  {site && Object.keys(locales).map((l) => <link rel="alternate" hreflang={l} href={new URL(pathFor(l), site)} />)}
+  {site && <link rel="alternate" hreflang="x-default" href={new URL('/', site)} />}
+  <meta property="og:title" content={t.meta.title} />
+  <meta property="og:description" content={t.meta.description} />
+  <meta property="og:type" content="website" />
+  <script is:inline>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+  <a class="skip" href="#main">{t.ui.skip}</a>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="lacquer" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#000" />
+        <stop offset=".2" stop-color="#FFF" stop-opacity=".62" />
+        <stop offset=".3" stop-color="#000" />
+        <stop offset=".78" stop-color="#000" />
+        <stop offset=".9" stop-color="#FFF" stop-opacity=".2" />
+        <stop offset="1" stop-color="#000" />
+      </linearGradient>
+      <symbol id="nib" viewBox="0 0 200 430">
+        <path d="M100 428C88 365 40 275 30 190 26 150 44 112 60 92V20Q60 6 74 6h52q14 0 14 14v72c16 20 34 58 30 98-10 85-58 175-70 238Z" fill="#000" />
+        <path d="M100 428C88 365 40 275 30 190 26 150 44 112 60 92V20Q60 6 74 6h52q14 0 14 14v72c16 20 34 58 30 98-10 85-58 175-70 238Z" fill="url(#lacquer)" />
+        <rect x="60" y="72" width="80" height="16" fill="#EF0808" />
+        <path d="M100 428V212" stroke="#EBEBEB" stroke-width="3" />
+        <circle cx="100" cy="198" r="15" fill="#EBEBEB" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <header class="top">
+    <a class="logo" href={pathFor(lang)} aria-label={t.ui.home}>Redpen<span class="logo-dot" aria-hidden="true"></span></a>
+    <nav class="top-nav" aria-label={t.ui.nav}>
+      <a href="#services">[ {t.nav.services} ]</a>
+      <a href="#method">[ {t.nav.method} ]</a>
+      <a href="#proof">[ {t.nav.proof} ]</a>
+      <a href="#faq">[ {t.nav.faq} ]</a>
+    </nav>
+    <details class="lang">
+      <summary aria-label={t.ui.language}><span aria-hidden="true">{lang}</span></summary>
+      <ul>
+        {Object.entries(locales).map(([l, name]) => (
+          <li><a href={pathFor(l)} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>{name}</a></li>
+        ))}
+      </ul>
+    </details>
+    <a class="btn btn-small" href="#book"><span>[ {t.nav.book} ]</span></a>
+  </header>
+
+  <main id="main">
+    <section class:list={['hero', { 'hero-gap': heroGap }]}>
+      <svg class="scribble" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M-40 620C180 300 420 120 520 240S300 720 480 700 900 180 1010 250 760 760 980 690 1240 420 1260 330" /></svg>
+      <p class="mono hero-kicker">[ {t.hero.kicker} ]</p>
+      <h1 class="hero-title" style={`--cols:${heroCols}`}>
+        {t.hero.lines.map((line, i) => (
+          <span class={`hl hl-${i}`}>
+            <span class="hl-text">{line}</span>
+            {i === 2 && <Stroke kind="under" />}
+          </span>
+        ))}
+      </h1>
+      <div class="hero-nib" aria-hidden="true"><svg><use href="#nib" /></svg></div>
+      <div class="hero-foot">
+        <p class="hero-sub">{t.hero.sub}</p>
+        <div class="hero-actions">
+          <a class="btn" href="#book"><span>[ {t.hero.cta} ]</span></a>
+          <a class="textlink mono" href="#edit">{t.hero.next} ↓</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="strike" id="edit" aria-labelledby="strike-title">
+      <div class="strike-pin">
+        <div class="strike-head">
+          <p class="mono">[ {t.strike.label} ]</p>
+          <h2 id="strike-title">{t.strike.title}</h2>
+        </div>
+        <ul class="strike-stage" role="list">
+          {t.strike.words.map((w, i) => (
+            <li class={`sw sw-${i}`}>
+              <span class="sw-word">
+                <span class="sw-text">{w}</span>
+                {i < 3 ? <Stroke kind={`s${i}`} /> : <Stroke kind="under" />}
+              </span>
+            </li>
+          ))}
+          <li class="strike-nib" aria-hidden="true"><svg><use href="#nib" /></svg></li>
+        </ul>
+        <p class="strike-end">{t.strike.end}</p>
+      </div>
+    </section>
+
+    <section class="services" id="services" aria-labelledby="services-title">
+      <div class="sec-head">
+        <p class="mono">[ {t.services.label} ]</p>
+        <h2 id="services-title" class="sec-title wipe">{t.services.title}</h2>
+      </div>
+      <div class="svc-grid">
+        {t.services.items.map((s, i) => (
+          <article class={`svc svc-${i}`}>
+            <p class="mono svc-no">{i === 0 ? t.services.lead : `0${i + 1}`}</p>
+            <h3>{s.name}</h3>
+            <p class="svc-body">{s.body}</p>
+            <a class="svc-book mono" href="#book" data-service={serviceIds[i]}>[ {t.services.book} ] →</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="markup" id="markup" aria-labelledby="markup-title">
+      <div class="markup-head">
+        <p class="mono">[ {t.markup.label} ]</p>
+        <h2 id="markup-title" class="sec-title wipe">{t.markup.title}</h2>
+        <p class="mono markup-note">{t.markup.note}</p>
+      </div>
+      <table class="ledger">
+        <thead>
+          <tr class="mono">
+            <th scope="col">{t.markup.head.line}</th>
+            <th scope="col" class="num">{t.markup.head.before}</th>
+            <th scope="col" class="num">{t.markup.head.after}</th>
+            <th scope="col" class="why">{t.markup.head.why}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {t.markup.rows.map((r, i) => {
+            const n = ledgerNumbers[i];
+            const up = n.after > n.before;
+            return (
+              <tr class:list={['row', { cut: n.cut, up }]}>
+                <th scope="row">
+                  <span class="row-line">{r.line}{n.cut && <Stroke kind={`s${i % 3}`} />}</span>
+                </th>
+                <td class="num before">{n.before}%</td>
+                <td class="num after">{n.after}%</td>
+                <td class="why mono">{r.why}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row">{t.markup.total}</th>
+            <td class="num before">{sum('before')}%</td>
+            <td class="num after">{sum('after')}%</td>
+            <td class="why mono">{t.markup.totalNote}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <section class="method" id="method" aria-labelledby="method-title">
+      <div class="sec-head">
+        <p class="mono">[ {t.method.label} ]</p>
+        <h2 id="method-title" class="method-title">{t.method.title}</h2>
+      </div>
+      <ol class="steps" style={`--cols:${stepCols}`}>
+        {t.method.steps.map((s, i) => (
+          <li class={`step step-${i}`}>
+            <h3 class="wipe">{s.verb}</h3>
+            <p>{s.body}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="proof" id="proof" aria-labelledby="proof-title">
+      <div class="proof-head">
+        <p class="mono">[ {t.proof.label} ]</p>
+        <h2 id="proof-title" class="sec-title wipe">{t.proof.title}</h2>
+        <p class="proof-note mono">{t.proof.note}</p>
+      </div>
+      <ul class="cases" role="list">
+        {t.proof.items.map((c, i) => (
+          <li class={`case case-${i}`}>
+            <p class="case-num wipe">{proofNumbers[i]}</p>
+            <p class="case-what">{c.what}</p>
+            <p class="mono case-who">[ {t.ui.sample} ] {c.who}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="faq" id="faq" aria-labelledby="faq-title">
+      <div class="faq-side">
+        <p class="mono">[ {t.faq.label} ]</p>
+        <h2 id="faq-title" class="sec-title">{t.faq.title}</h2>
+      </div>
+      <div class="faq-list">
+        {t.faq.items.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="book" id="book" aria-labelledby="book-title">
+      <p class="mono">[ {t.book.label} ]</p>
+      <h2 id="book-title" class="book-title" style={`--cols:${bookCols}`}>
+        {t.book.title.map((l, i) => <span class={`bl bl-${i}`}>{l}</span>)}
+      </h2>
+      <div class="book-grid">
+        <p class="book-sub">{t.book.sub}</p>
+        <div class="panel">
+          <form id="bookform" novalidate>
+            <fieldset class="opts" aria-describedby="err-service">
+              <legend>{t.book.service}</legend>
+              {t.services.items.map((s, i) => (
+                <label class="opt">
+                  <input type="radio" name="service" value={serviceIds[i]} data-label={s.name} required />
+                  <span class="opt-text">{s.name}<Stroke kind={`s${i % 3}`} /></span>
+                </label>
+              ))}
+              <p class="err" id="err-service" aria-live="polite"></p>
+            </fieldset>
+            <div class="fields">
+              <div class="field">
+                <label for="f-name">{t.book.name}</label>
+                <input id="f-name" name="name" autocomplete="name" required aria-describedby="err-name" />
+                <p class="err" id="err-name" aria-live="polite"></p>
+              </div>
+              <div class="field">
+                <label for="f-email">{t.book.email}</label>
+                <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="err-email" />
+                <p class="err" id="err-email" aria-live="polite"></p>
+              </div>
+              <div class="field">
+                <label for="f-company">{t.book.company}</label>
+                <input id="f-company" name="company" autocomplete="organization" required aria-describedby="err-company" />
+                <p class="err" id="err-company" aria-live="polite"></p>
+              </div>
+              <div class="field field-wide">
+                <label for="f-note">{t.book.note}</label>
+                <textarea id="f-note" name="note" rows="3"></textarea>
+              </div>
+            </div>
+            <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+            <button class="btn btn-send" type="submit"><span>[ {t.book.submit} ]</span></button>
+            <p class="privacy">{t.book.privacy}</p>
+          </form>
+          <div class="done" id="done" tabindex="-1" hidden>
+            <h3>{t.book.doneTitle}</h3>
+            <p id="done-text"></p>
+            <button class="textlink mono" type="button" id="again">{t.book.again}</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="foot-row">
+      <p>{t.footer.line}</p>
+      <a class="textlink mono" href={`mailto:${settings.email}`}>{settings.email}</a>
+      <a class="textlink mono" href="#main">{t.footer.top} ↑</a>
+    </div>
+    <p class="foot-word" aria-hidden="true">Redpen</p>
+  </footer>
+
+  <script is:inline id="i18n" type="application/json" set:html={JSON.stringify(clientStrings)}></script>
+  <script src="../scripts/main.js"></script>
+</body>
+</html>
